@@ -1,0 +1,38 @@
+[package]
+name = "cchub"
+version = "0.1.0"
+description = "开源跨平台 AI 桌面应用商店与本地工具管理平台"
+authors = ["cchub contributors"]
+license = "MIT"
+repository = "https://github.com/cchub/cchub"
+edition = "2021"
+rust-version = "1.77.2"
+
+# Tauri 的移动端入口需要 lib 形式，桌面端也复用同一份逻辑
+[lib]
+name = "cchub_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+# 只用 opener 打开外链；子进程一律走 std::process::Command，不需要 shell 插件
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ureq = { version = "3", default-features = false, features = ["json", "gzip"] }
+tauri-plugin-autostart = "2.5.1"
+serde_yaml = "0.9.34"
+keyring = "4"
+# Codex 宿主写 ~/.codex/config.toml 用：保留用户手写的注释与表格段，
+# 整份 serde 序列化覆盖会把 marketplaces/plugins 等内容洗掉，不可接受
+toml_edit = "0.22"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
