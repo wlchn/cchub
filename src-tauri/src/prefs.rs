@@ -289,7 +289,7 @@ mod tests {
         assert_eq!(merged.theme, Theme::Dark); // 被 diff 覆盖
         assert_eq!(merged.locale, "en-US"); // 被 diff 写入
         assert_eq!(merged.catalog_ttl_hours, 24); // 未提及，保留
-        assert_eq!(merged.detect_on_launch, true); // 未提及，保留
+        assert!(merged.detect_on_launch); // 未提及，保留
     }
 
     #[test]

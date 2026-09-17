@@ -15,7 +15,7 @@
 use crate::error;
 use std::collections::BTreeMap;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde_json::{json, Value};
 use toml_edit::{value, DocumentMut};
@@ -38,32 +38,32 @@ fn home_dir() -> Result<PathBuf, String> {
         .map_err(|_| error::err_plain("noHomeDir"))
 }
 
-fn backup_path(path: &PathBuf) -> PathBuf {
-    let mut s = path.clone().into_os_string();
+fn backup_path(path: &Path) -> PathBuf {
+    let mut s = path.to_path_buf().into_os_string();
     s.push(".cchub.bak");
     PathBuf::from(s)
 }
 
-fn managed_path(host_file: &PathBuf) -> PathBuf {
-    let mut s = host_file.clone().into_os_string();
+fn managed_path(host_file: &Path) -> PathBuf {
+    let mut s = host_file.to_path_buf().into_os_string();
     s.push(".cchub-managed");
     PathBuf::from(s)
 }
 
-fn read_managed(host_file: &PathBuf) -> Vec<String> {
+fn read_managed(host_file: &Path) -> Vec<String> {
     fs::read_to_string(managed_path(host_file))
         .ok()
         .and_then(|text| serde_json::from_str(&text).ok())
         .unwrap_or_default()
 }
 
-fn write_managed(host_file: &PathBuf, names: &[String]) -> Result<(), String> {
+fn write_managed(host_file: &Path, names: &[String]) -> Result<(), String> {
     let text = serde_json::to_string(names).map_err(|err| format!("{err}"))?;
     fs::write(managed_path(host_file), text).map_err(|err| error::io_failed("writeManifest", err))
 }
 
 /// 写入前备份（有内容才备份）。
-fn backup(host_file: &PathBuf) -> Result<(), String> {
+fn backup(host_file: &Path) -> Result<(), String> {
     if let Ok(text) = fs::read_to_string(host_file) {
         if !text.is_empty() {
             fs::write(backup_path(host_file), text).map_err(|err| error::io_failed("backup", err))?;
@@ -73,7 +73,7 @@ fn backup(host_file: &PathBuf) -> Result<(), String> {
 }
 
 /// 原子写：tmp + rename，失败回落直接写。
-fn atomic_write(path: &PathBuf, content: &str, tmp_ext: &str, what: &str) -> Result<(), String> {
+fn atomic_write(path: &Path, content: &str, tmp_ext: &str, what: &str) -> Result<(), String> {
     let tmp = path.with_extension(tmp_ext);
     if fs::write(&tmp, content).is_ok() {
         let _ = fs::rename(&tmp, path);

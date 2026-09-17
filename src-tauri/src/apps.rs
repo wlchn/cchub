@@ -527,39 +527,6 @@ fn execute_task(
     Err(diagnose_failure(kind, app_name, &stderr_lines))
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    /// 打印本机真实的检测结果。
-    ///
-    /// 依赖开发者机器上装了什么，所以默认不跑；排查「明明装了却检测不到」时
-    /// 手动执行：`cargo test -- --ignored --nocapture`
-    #[test]
-    #[ignore = "依赖本机环境，需手动运行"]
-    fn diagnose_local_machine() {
-        let env = tauri::async_runtime::block_on(detect_environment()).unwrap();
-        println!("os          = {} / {}", env.os, env.arch);
-        println!("node        = {:?} @ {:?}", env.node_version, env.node_path);
-        println!("npm         = {:?} @ {:?}", env.npm_version, env.npm_path);
-        println!("npm bin dir = {:?}", sys::npm_bin_dir());
-        println!("PATH        = {}", env.resolved_path);
-
-        let statuses = tauri::async_runtime::block_on(detect_apps()).unwrap();
-        for status in statuses {
-            println!(
-                "\n{}\n  installed = {}\n  version   = {:?}\n  path      = {:?}\n  managed   = {}\n  source    = {:?}",
-                status.id,
-                status.installed,
-                status.version,
-                status.path,
-                status.managed,
-                status.external_hint,
-            );
-        }
-    }
-}
-
 /// 把 npm 的失败输出翻译成用户能照着做的一句话。
 fn diagnose_failure(kind: TaskKind, app_name: &str, stderr: &[String]) -> String {
     let joined = stderr.join("\n");
@@ -601,4 +568,37 @@ fn diagnose_failure(kind: TaskKind, app_name: &str, stderr: &[String]) -> String
         .unwrap_or("请查看下方日志");
 
     format!("{app_name} {verb}失败：{detail}")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// 打印本机真实的检测结果。
+    ///
+    /// 依赖开发者机器上装了什么，所以默认不跑；排查「明明装了却检测不到」时
+    /// 手动执行：`cargo test -- --ignored --nocapture`
+    #[test]
+    #[ignore = "依赖本机环境，需手动运行"]
+    fn diagnose_local_machine() {
+        let env = tauri::async_runtime::block_on(detect_environment()).unwrap();
+        println!("os          = {} / {}", env.os, env.arch);
+        println!("node        = {:?} @ {:?}", env.node_version, env.node_path);
+        println!("npm         = {:?} @ {:?}", env.npm_version, env.npm_path);
+        println!("npm bin dir = {:?}", sys::npm_bin_dir());
+        println!("PATH        = {}", env.resolved_path);
+
+        let statuses = tauri::async_runtime::block_on(detect_apps()).unwrap();
+        for status in statuses {
+            println!(
+                "\n{}\n  installed = {}\n  version   = {:?}\n  path      = {:?}\n  managed   = {}\n  source    = {:?}",
+                status.id,
+                status.installed,
+                status.version,
+                status.path,
+                status.managed,
+                status.external_hint,
+            );
+        }
+    }
 }

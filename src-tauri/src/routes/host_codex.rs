@@ -17,7 +17,7 @@
 
 use crate::error;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[cfg(test)]
 use serde_json::Map;
@@ -47,8 +47,8 @@ fn auth_path() -> Result<PathBuf, String> {
     Ok(codex_dir()?.join("auth.json"))
 }
 
-fn backup_path(path: &PathBuf) -> PathBuf {
-    let mut s = path.clone().into_os_string();
+fn backup_path(path: &Path) -> PathBuf {
+    let mut s = path.to_path_buf().into_os_string();
     s.push(".cchub.bak");
     PathBuf::from(s)
 }

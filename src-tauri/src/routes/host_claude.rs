@@ -14,7 +14,7 @@
 use crate::error;
 use std::collections::BTreeSet;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde_json::{json, Value};
 
@@ -34,8 +34,8 @@ fn settings_path() -> Result<PathBuf, String> {
     Ok(home_dir()?.join(".claude").join("settings.json"))
 }
 
-fn backup_path(settings: &PathBuf) -> PathBuf {
-    let mut s = settings.clone().into_os_string();
+fn backup_path(settings: &Path) -> PathBuf {
+    let mut s = settings.to_path_buf().into_os_string();
     s.push(".cchub.bak");
     PathBuf::from(s)
 }

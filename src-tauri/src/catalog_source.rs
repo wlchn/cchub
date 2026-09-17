@@ -123,8 +123,10 @@ fn http_agent(prefs: &Prefs) -> ureq::Agent {
 /// 供其他模块（keys.rs 的连通测试）构造同一策略的 agent：
 /// 走偏好代理（sys 的全局快照）、HTTPS only、10s 超时。
 pub fn http_agent_for_prefs() -> ureq::Agent {
-    let mut prefs = Prefs::default();
-    prefs.proxy = crate::sys::proxy_prefs().unwrap_or_default();
+    let prefs = Prefs {
+        proxy: crate::sys::proxy_prefs().unwrap_or_default(),
+        ..Default::default()
+    };
     http_agent(&prefs)
 }
 
@@ -344,6 +346,6 @@ mod tests {
     fn wrong_shape_is_failure() {
         // RemoteEntry 必填字段缺失（缺 homepage），整条解析失败
         let text = r#"[{"id":"claude-code","name":"x","vendor":"v","tagline":"t","description":"d","initials":"XX","tags":[]}]"#;
-        assert!(parse_remote(&text).is_none());
+        assert!(parse_remote(text).is_none());
     }
 }
