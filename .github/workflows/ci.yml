@@ -1,12 +1,10 @@
 name: CI
 
-# 2026-09-14：暂时停掉 push / pull_request 自动触发，只保留手动触发。
-# 原因：推送后 CI 会失败，在定位清楚之前不想让它刷屏。恢复自动触发只需
-# 把下面两行取消注释（原本不按分支过滤：默认分支名若与预期不符，写死分支
-# 会让 CI 静默不跑；分支多了嫌吵时再收窄成 branches: [main]）。
+# 触发条件：push / PR / 手动触发都跑。不按分支过滤——默认分支名若与预期不符，
+# 写死分支会让 CI 静默不跑；分支多了嫌吵时再收窄成 branches: [main]。
 on:
-  # push:
-  # pull_request:
+  push:
+  pull_request:
   workflow_dispatch:
 
 # 同一分支上的旧运行没必要跑完，新推送直接取代它
@@ -23,14 +21,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # pnpm 版本取自 package.json 的 packageManager 字段（单一真值）。
+      # 此处不要再写 version —— 两者同时存在该 action 会直接报错。
       - uses: pnpm/action-setup@v4
-        with:
-          # package.json 里没写 packageManager，这里显式钉版本
-          version: 10
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # 以 .nvmrc 为单一真值，与本机开发环境一致
+          node-version-file: .nvmrc
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
@@ -40,15 +38,17 @@ jobs:
       - run: pnpm test:messages
       - run: pnpm build
 
-  # Rust：单元测试。`tauri` 带默认 wry/webkit features，Linux 上必须先装系统依赖
-  # 才能编译；清单取自 Tauri v2 官方文档。
+  # Rust：单元测试 + clippy。`tauri` 带默认 wry/webkit features，Linux 上必须先装
+  # 系统依赖才能编译；清单取自 Tauri v2 官方文档。
   rust:
-    name: Rust tests
+    name: Rust tests & lints
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
 
       - uses: Swatinem/rust-cache@v2
         with:
@@ -71,4 +71,9 @@ jobs:
 
       # 不需要先构建前端：dev profile 下 tauri-build 不要求 frontendDist 存在
       - run: cargo test
+        working-directory: src-tauri
+
+      # 全库零 warning 是当前基线。注意 clippy 跟着 stable 走，将来新增的 lint
+      # 会让这一步变红 —— 那是有意为之（要么改代码，要么显式 allow）。
+      - run: cargo clippy --all-targets -- -D warnings
         working-directory: src-tauri

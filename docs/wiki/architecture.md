@@ -101,7 +101,7 @@ src/
 │   ├── theme.ts        主题三段式
 │   └── utils.ts        cn()（clsx + tailwind-merge）
 ├── i18n/               index.ts（初始化+类型化词典）/ locale.ts（落地）/ useLocale.ts（校正）
-├── locales/            zh-CN.json / en-US.json（各 461 行，扁平化后键一一对应）
+├── locales/            zh-CN.json / en-US.json（各 460 行，扁平化后键一一对应）
 ├── store/              6 个 Zustand store：apps catalog keys mcp routes skills
 ├── pages/              6 个页面：AppStore Skills Mcp ApiKeys Routes Settings
 └── components/

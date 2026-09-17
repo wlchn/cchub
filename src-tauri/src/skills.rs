@@ -51,8 +51,9 @@ pub struct SkillEntry {
 ///
 /// 与 registry.rs 同一模式：前端按 id 请求，git URL 在这里查表。
 /// 收录两个经过验证的仓库：
-/// - anthropics/skills（官方，19 个，平铺在 skills/ 下）
+/// - anthropics/skills（官方，16 个，平铺在 skills/ 下）
 /// - obra/superpowers（社区最火的工程方法论合集，14 个）
+///
 /// 远端目录源（M0.2）未来可以扩充展示元数据，但 id 不在白名单内就装不了。
 #[derive(Debug, Clone, Serialize)]
 pub struct SkillSource {

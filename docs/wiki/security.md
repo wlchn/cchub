@@ -139,7 +139,8 @@ Update/Uninstall 返回 `appOutsideNpmGlobal` 错误（带 `hint` / `verb` 词�
   `default-src 'self'; script-src 'self'`，无 `unsafe-inline` 脚本。
   因此**不能用 index.html 内联脚本打主题标记** —— 主题必须由 JS 在挂载前同步设置。
 - Tauri capability（`src-tauri/capabilities/default.json`）是最小集：
-  `core:default` + 窗口拖拽 + `opener:allow-open-url`（限 `https://*`）+ autostart 三命令。
+  `core:default` + 窗口拖拽 + `opener:allow-open-url`（限 `https://*`）+ autostart 三命令
+  + `window-state:default`（只用于恢复窗口位置尺寸，不读窗口内容）。
   没有引入 shell 插件 —— 子进程全走 `std::process::Command`。
 - 外链走 `plugin-opener` 的系统浏览器，不在 webview 内导航外部站点。
 

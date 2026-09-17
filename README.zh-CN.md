@@ -17,7 +17,7 @@
 | 应用商店 | ✅ 可用 | 检测 / 安装 / 更新 / 卸载 7 个 npm CLI，检测 3 个外部应用 |
 | 基础设施 | ✅ 可用 | 偏好存储（版本化 + 原子写）、远端目录源（白名单过滤 + 缓存回落）、代理注入（M0） |
 | 设置 | ✅ 可用 | 主题 / 语言 / 开机自启 / 启动行为 / 代理（含连通测试）/ 目录源 / 环境诊断（M1） |
-| Skill 管理 | ✅ 可用 | 33 个 Skill 白名单安装源（官方 anthropics/skills 全量 + 社区 obra/superpowers），启停（.disabled）、卸载（防路径逃逸）（M2） |
+| Skill 管理 | ✅ 可用 | 30 个 Skill 白名单安装源（官方 anthropics/skills 全量 + 社区 obra/superpowers），启停（.disabled）、卸载（防路径逃逸）（M2） |
 | API Key | ✅ 可用 | 系统钥匙串存取（keyring）、连通测试、掩码显示（M4） |
 | 路由 | ✅ 可用 | 供应商预设多套管理 + 一键切换下发；宿主：Claude Code（settings.json env + 模型档位映射）+ Codex（config.toml 的 model_providers + auth.json）+ Gemini CLI（~/.gemini/.env）；供应商目录 9 家；宿主实际配置回读与偏差提示（M5+） |
 | MCP | ✅ 可用 | 9 个服务目录（官方 + Filesystem / Playwright / Context7 / Desktop Commander / Firecrawl），参数与 env 表单（@keychain: 引用）、三宿主写入（Claude Code / Codex / Gemini CLI，备份 + 只删自己的条目）、握手测试（M3+） |

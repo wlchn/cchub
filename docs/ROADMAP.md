@@ -86,7 +86,7 @@ M4（API Key）不依赖任何前置，可提前；M3 需要 M4 的钥匙串能�
   还是中文」难查
 - **后端消息也双语化**：Rust 的错误与操作反馈统一返回结构化串
   （`{"code":..,"args":..}`，见 `src-tauri/src/error.rs`），前端 `lib/errors.ts`
-  按 `code` 查词典。`Result<T,String>` 签名不变，30 个命令无需改；参数里的引号、
+  按 `code` 查词典。`Result<T,String>` 签名不变，32 个命令无需改；参数里的引号、
   中文、换行由 serde_json 转义，不会被撑破
   - 错误 → `errors.*`；状态与操作反馈 → `notes.*`
   - 保留参数名会在插值前二次翻译：`op`→`op.*`、`label`→`fields.*`、
@@ -108,8 +108,8 @@ Skill 是给编码智能体加装的能力包，本模块管「找到 + 装好 +
   前端拼不进地址）、git 仅 https + `--depth 1` 浅克隆 + 走代理、frontmatter 解析
   （serde_yaml，name 必填）、`.disabled` 后缀软禁用、卸载前 canonicalize 前缀校验
   防逃逸、仓库布局自适应（单 Skill / monorepo 多子目录）、跨设备 rename 回落复制
-- 目录来源（两个经过克隆验证的仓库，共 33 个 Skill）：
-  - anthropics/skills（官方，19 个全量，布局已改为 `skills/<name>` 平铺）：
+- 目录来源（两个经过克隆验证的仓库，共 30 个 Skill）：
+  - anthropics/skills（官方，16 个，布局已改为 `skills/<name>` 平铺）：
     文档（docx/xlsx/pptx/pdf）、设计（frontend-design/brand-guidelines/
     theme-factory/canvas-design/algorithmic-art）、工程（mcp-builder/
     skill-creator/webapp-testing/web-artifacts-builder/claude-api）、
@@ -271,7 +271,7 @@ M4 API Key ──────────────> M5 路由（key 引用 + 
 
 - Windows 专项验证（`where` / `cmd /C` 路径、Credential Manager）
 - CI 双平台矩阵：当前 `.github/workflows/ci.yml` 跑 Ubuntu 单平台
-  （前端 `check:locales` + `test:messages` + `build`，Rust `cargo test`），
+  （前端 `check:locales` + `test:messages` + `build`，Rust `cargo test` + `cargo clippy`），
   Windows 侧待补
 - 各 CLI 输出格式变化的兼容性监控（`extract_version` 是模式匹配，靠真实安装回归）
 - MCP / Skill 目录从内置白名单接远端目录源（复用 M0.2，白名单仍是安装边界）
