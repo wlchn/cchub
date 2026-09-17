@@ -25,6 +25,8 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(autostart)
+        // 恢复上次退出时的窗口位置与尺寸
+        .plugin(tauri_plugin_window_state::Builder::default().build())
         .manage(RunningTasks::default())
         .manage(CatalogState::new())
         .invoke_handler(tauri::generate_handler![
@@ -65,10 +67,10 @@ pub fn run() {
             // 偏好要在任何命令可用前就绪：代理快照被子进程构造读取（sys::proxy_envs），
             // 目录 TTL 也来自它。惰性建状态 + 立刻加载并注入代理。
             use tauri::Manager;
-            let state = PrefsState::load(&app);
+            let state = PrefsState::load(app);
             sys::set_proxy_prefs(state.snapshot().proxy);
             app.manage(state);
-            app.manage(KeysState::load(&app.handle()));
+            app.manage(KeysState::load(app.handle()));
             Ok(())
         })
         .run(tauri::generate_context!())
