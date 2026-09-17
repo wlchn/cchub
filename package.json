@@ -5,6 +5,11 @@
   "type": "module",
   "description": "开源跨平台 AI 桌面应用商店与本地工具管理平台",
   "license": "MIT",
+  "packageManager": "pnpm@10.34.5",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=10"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
