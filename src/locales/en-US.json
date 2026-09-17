@@ -1,7 +1,6 @@
 {
   "app": {
     "name": "CCHub",
-    "tagline": "AI tooling control panel",
     "version": "v0.1.0 · MIT licensed"
   },
   "nav": {

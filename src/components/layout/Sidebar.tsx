@@ -33,17 +33,8 @@ export function Sidebar() {
 
   return (
     <aside className="bg-sidebar border-sidebar-border flex w-[228px] shrink-0 flex-col border-r">
-      <div
-        className="flex h-14 items-center gap-2.5 px-5"
-        data-tauri-drag-region
-      >
-        <div className="bg-primary text-primary-foreground grid size-7 place-items-center rounded-lg text-[13px] font-bold">
-          CC
-        </div>
-        <div className="leading-tight">
-          <div className="text-sm font-semibold">{t("app.name")}</div>
-          <div className="text-muted-foreground text-[11px]">{t("app.tagline")}</div>
-        </div>
+      <div className="flex h-14 items-center px-5" data-tauri-drag-region>
+        <div className="text-sm font-semibold">{t("app.name")}</div>
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 px-2.5 py-2">

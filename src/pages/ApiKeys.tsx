@@ -135,7 +135,7 @@ export function ApiKeys() {
               {t("apiKeys.deleteDialog.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-white hover:bg-destructive/90"
+              variant="destructive"
               onClick={() => {
                 if (confirming) void remove(confirming);
                 setConfirming(null);

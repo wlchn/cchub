@@ -131,7 +131,9 @@ function AppearanceCard({
           <Label htmlFor="locale-select">{t("settings.appearance.language")}</Label>
           <Select
             value={prefs.locale}
-            onValueChange={(locale) => void setPrefs({ locale })}
+            onValueChange={(locale) => {
+              if (locale) void setPrefs({ locale });
+            }}
           >
             <SelectTrigger id="locale-select" className="w-44">
               <SelectValue />
