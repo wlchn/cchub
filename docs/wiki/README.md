@@ -1,6 +1,6 @@
 # CCHub 项目 Wiki
 
-> 本 Wiki 由对当前代码库（`master` @ `33db781`）的静态分析生成，描述的是**代码中实际存在的实现**，而非规划。
+> 本 Wiki 由对代码库某个具体版本的静态分析生成（基线 `0298f87`），描述的是**代码中实际存在的实现**，而非规划。
 > 与规划/排期的区别见 [docs/ROADMAP.md](../ROADMAP.md)。
 
 CCHub 是一个开源的跨平台桌面应用（Tauri 2 + Rust + React），定位是
@@ -40,7 +40,7 @@ CCHub 是一个开源的跨平台桌面应用（Tauri 2 + Rust + React），定�
 | 层 | 选型 |
 | --- | --- |
 | 外壳 | Tauri 2 |
-| 后端 | Rust 2021（edition 2021，`rust-version = 1.77.2`） |
+| 后端 | Rust 2021（edition 2021，`rust-version = 1.87`） |
 | 前端 | React 19 + TypeScript 7 + Vite 8 |
 | 样式 | Tailwind CSS 4 + shadcn/ui（neutral 主题，未做品牌化改动） |
 | 状态 | Zustand 5 |

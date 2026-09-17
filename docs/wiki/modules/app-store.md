@@ -26,7 +26,7 @@ pub struct AppSpec {
     pub name: &'static str,
     pub source: AppSource,
     pub bin: &'static str,          // 可执行文件名
-    pub version_args: &'static [&'static str],
+    pub version_args: Option<&'static [&'static str]>,
 }
 ```
 

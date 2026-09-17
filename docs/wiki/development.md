@@ -4,7 +4,7 @@
 
 - **Node.js 20+**（本项目在 24 上开发）与 **pnpm 10+**
 - **Rust 1.87+**（用 `rustup` 装）。Tauri 2 当前依赖树需要 edition2024，
-  更早的版本编译不过。（`Cargo.toml` 里写的 `rust-version = 1.77.2` 是保守下限）
+  更早的版本编译不过。（`Cargo.toml` 的 `rust-version` 与此一致）
 - 平台依赖：
   - macOS：Xcode Command Line Tools（`xcode-select --install`）
   - Windows：Microsoft C++ Build Tools + WebView2 运行时（Win11 自带）
@@ -70,8 +70,10 @@ cd src-tauri && cargo test -- --ignored --nocapture
 两个并行 job，均跑 Ubuntu：
 
 - **frontend**：`pnpm install --frozen-lockfile` → `check:locales` → `test:messages`
-  → `build`（pnpm 版本显式钉 10；Node 22）
-- **rust**：装 Tauri 的 Linux 系统依赖（webkit2gtk 等）→ `cargo test`
+  → `build`（pnpm 与 Node 版本都取自单一真值：前者读 `package.json` 的
+  `packageManager`，后者读 `.nvmrc`）
+- **rust**：装 Tauri 的 Linux 系统依赖（webkit2gtk 等）→ `cargo test` →
+  `cargo clippy --all-targets -- -D warnings`
   （`Swatinem/rust-cache` 缓存，workspaces 指向 `src-tauri`）
 
 CI **不按分支过滤**（push / PR / 手动触发都跑），用 concurrency 取消同分支的旧运行。

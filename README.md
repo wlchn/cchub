@@ -17,7 +17,7 @@ The home page (app store) is usable; the remaining modules are placeholder pages
 | App Store | ✅ Ready | Detect / install / update / uninstall 7 npm CLIs; detect 3 external apps |
 | Infrastructure | ✅ Ready | Preference store (versioned + atomic writes), remote catalog source (allowlist filtering + cache fallback), proxy injection (M0) |
 | Settings | ✅ Ready | Theme / language / launch at login / startup behavior / proxy (with connectivity test) / catalog source / environment diagnostics (M1) |
-| Skill Management | ✅ Ready | 33 whitelisted Skill install sources (the full official anthropics/skills set + community obra/superpowers), enable/disable (`.disabled`), uninstall (path-escape safe) (M2) |
+| Skill Management | ✅ Ready | 30 whitelisted Skill install sources (the full official anthropics/skills set + community obra/superpowers), enable/disable (`.disabled`), uninstall (path-escape safe) (M2) |
 | API Key | ✅ Ready | System keychain storage (keyring), connectivity test, masked display (M4) |
 | Routing | ✅ Ready | Multiple managed provider presets + one-click switch and push-down; hosts: Claude Code (settings.json env + model tier mapping) + Codex (config.toml `model_providers` + auth.json) + Gemini CLI (~/.gemini/.env); 9 provider catalog entries; reads back the host's actual config and flags drift (M5+) |
 | MCP | ✅ Ready | 9 service catalog entries (official + Filesystem / Playwright / Context7 / Desktop Commander / Firecrawl), parameter and env forms (`@keychain:` references), writes to three hosts (Claude Code / Codex / Gemini CLI, with backup and removal of only its own entries), handshake test (M3+) |

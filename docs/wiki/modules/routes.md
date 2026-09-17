@@ -158,15 +158,21 @@ CLI 统一指向网关。价值是切换不用改 CLI 配置、统一计费统�
 代价是常驻进程管理、TLS、流式转发正确性 —— 风险高，**先不承诺**，
 等阶段一稳定使用后评估。
 
-## 测试覆盖（17 个）
+## 测试覆盖（28 个）
 
-`accepts_valid_rule`、`accepts_codex_with_any_catalog_provider`、
-`codex_requires_model`、`rejects_http_url`、
+主模块（`routes.rs`，12 个）：`accepts_valid_rule`、
+`accepts_codex_with_any_catalog_provider`、`codex_requires_model`、`rejects_http_url`、
 `rejects_provider_without_anthropic_endpoint_for_claude`、
 `gemini_cli_requires_gemini_compatible_provider`、`accepts_new_cn_providers_for_claude`、
 `rejects_plain_key_ref`、`rejects_unknown_app`、`rejects_blank_model_mapping`、
-`rejects_blank_name`、`legacy_rule_deserializes_without_new_fields`；
-host 侧：`writes_provider_section_and_top_keys`、`clear_removes_only_our_sections`、
-`clear_keeps_user_owned_model_provider`、`switch_between_providers_replaces_section`、
-`rule_without_model_clears_model_key`、`auth_edit_only_touches_openai_key`、
-`provider_key_is_prefixed`。
+`rejects_blank_name`、`legacy_rule_deserializes_without_new_fields`。
+
+host 侧：Codex（7 个）`writes_provider_section_and_top_keys`、
+`clear_removes_only_our_sections`、`clear_keeps_user_owned_model_provider`、
+`switch_between_providers_replaces_section`、`rule_without_model_clears_model_key`、
+`auth_edit_only_touches_openai_key`、`provider_key_is_prefixed`；
+Claude Code（2 个）`managed_keys_are_a_safe_subset`、`managed_roundtrip_filter`；
+Gemini CLI（7 个）`appends_keys_to_empty_file`、
+`replaces_existing_managed_lines_in_place`、`clear_removes_only_managed_lines`、
+`clear_on_file_without_managed_lines_is_noop`、`quoted_values_are_left_alone`、
+`malformed_lines_untouched`、`keychain_ref_resolved_by_apply_path`。
