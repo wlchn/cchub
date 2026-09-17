@@ -98,20 +98,18 @@ export function Skills() {
             <AlertDialogTitle>
               {t("skills.deleteDialog.title", { name: confirming?.meta.name ?? "" })}
             </AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="space-y-2">
-                <span className="block">
-                  {t("skills.deleteDialog.description")}
-                </span>
-                {confirming?.path && (
-                  <code
-                    className="bg-muted text-muted-foreground block truncate rounded-md px-2 py-1 font-mono text-xs"
-                    data-selectable
-                  >
-                    {confirming.path}
-                  </code>
-                )}
-              </div>
+            <AlertDialogDescription render={<div className="space-y-2" />}>
+              <span className="block">
+                {t("skills.deleteDialog.description")}
+              </span>
+              {confirming?.path && (
+                <code
+                  className="bg-muted text-muted-foreground block truncate rounded-md px-2 py-1 font-mono text-xs"
+                  data-selectable
+                >
+                  {confirming.path}
+                </code>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -119,7 +117,7 @@ export function Skills() {
               {t("skills.deleteDialog.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-white hover:bg-destructive/90"
+              variant="destructive"
               onClick={() => {
                 if (confirming) void uninstall(confirming.id);
                 setConfirming(null);

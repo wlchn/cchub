@@ -132,7 +132,7 @@ export function Mcp() {
           <AlertDialogFooter>
             <AlertDialogCancel>{t("mcp.removeDialog.cancel")}</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-white hover:bg-destructive/90"
+              variant="destructive"
               onClick={() => {
                 if (confirming) void remove(confirming.host, confirming.name);
                 setConfirming(null);
@@ -265,7 +265,13 @@ function ServiceCard({
       <CardContent className="space-y-3">
         <div className="flex items-center gap-3">
           <Label className="text-xs">{t("mcp.catalog.writeTo")}</Label>
-          <Select value={targetHost} onValueChange={setTargetHost}>
+          {/* Base UI 的 Select 在清空时回传 null；这里没有「不选」这一档，忽略即可 */}
+          <Select
+            value={targetHost}
+            onValueChange={(host) => {
+              if (host) setTargetHost(host);
+            }}
+          >
             <SelectTrigger className="h-8 w-52">
               <SelectValue />
             </SelectTrigger>

@@ -93,7 +93,7 @@ export function AppCard({
 
   return (
     <Card>
-      <CardHeader className="flex-row items-start gap-3.5 space-y-0">
+      <CardHeader className="flex flex-row items-start gap-3.5">
         <div className="bg-muted text-muted-foreground grid size-10 shrink-0 place-items-center rounded-md text-xs font-semibold">
           {entry.initials}
         </div>
@@ -262,20 +262,18 @@ export function AppCard({
             <AlertDialogTitle>
               {t("appCard.uninstallDialog.title", { name: entry.name })}
             </AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="space-y-2">
-                <span className="block">
-                  {t("appCard.uninstallDialog.description", { name: entry.name })}
-                </span>
-                {status?.path && (
-                  <code
-                    className="bg-muted text-muted-foreground block truncate rounded-md px-2 py-1 font-mono text-xs"
-                    data-selectable
-                  >
-                    {status.path}
-                  </code>
-                )}
-              </div>
+            <AlertDialogDescription render={<div className="space-y-2" />}>
+              <span className="block">
+                {t("appCard.uninstallDialog.description", { name: entry.name })}
+              </span>
+              {status?.path && (
+                <code
+                  className="bg-muted text-muted-foreground block truncate rounded-md px-2 py-1 font-mono text-xs"
+                  data-selectable
+                >
+                  {status.path}
+                </code>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -283,8 +281,13 @@ export function AppCard({
               {t("appCard.uninstallDialog.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive text-white hover:bg-destructive/90"
-              onClick={() => onRunTask(entry.id, "uninstall")}
+              variant="destructive"
+              // Base UI 的 AlertDialogAction 只是个普通 Button，不像 Radix 的 Action
+              // 会隐式关闭对话框，所以这里必须自己收掉，否则确认后弹窗一直挂着。
+              onClick={() => {
+                onRunTask(entry.id, "uninstall");
+                setConfirmingUninstall(false);
+              }}
             >
               <Trash2 />
               {t("appCard.uninstallDialog.confirm")}

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
 
 import { cn } from "@/lib/utils";
 
@@ -6,15 +6,16 @@ function Separator({
   className,
   orientation = "horizontal",
   ...props
-}: React.ComponentProps<"div"> & { orientation?: "horizontal" | "vertical" }) {
+}: SeparatorPrimitive.Props) {
   return (
-    <div
+    <SeparatorPrimitive
       data-slot="separator"
-      role="separator"
-      aria-orientation={orientation}
+      orientation={orientation}
       className={cn(
-        "bg-border shrink-0",
-        orientation === "horizontal" ? "h-px w-full" : "h-full w-px",
+        // Base UI 发的是 data-orientation="horizontal|vertical"，
+        // 不是 data-horizontal/data-vertical，必须按属性值选择器写，
+        // 否则分隔线拿不到尺寸、直接渲染不可见。
+        "shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-px data-[orientation=vertical]:self-stretch",
         className,
       )}
       {...props}

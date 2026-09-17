@@ -1,7 +1,8 @@
 # 前端架构
 
 技术栈：React 19 + TypeScript 7 + Vite 8 + Tailwind CSS 4 + shadcn/ui + Zustand 5
-+ React Router 7（HashRouter）+ i18next。
++ React Router 7（HashRouter）+ i18next。UI 原语库是 **Base UI**
+（`@base-ui/react`，对应 shadcn 的 `base-vega` 风格），项目内已无 Radix。
 
 ## 目录职责
 
@@ -15,7 +16,7 @@
 | `i18n/` | 语言初始化、落地、校正 |
 | `store/` | 6 个领域 store |
 | `pages/` | 6 个页面 |
-| `components/` | `ui/`（shadcn 原语）、`layout/`、业务组件 |
+| `components/` | `ui/`（shadcn 原语，Base UI 实现）、`layout/`、业务组件 |
 
 ## 路由表
 
@@ -181,3 +182,21 @@ stdout/stderr 是子进程原文，不翻译）、`EnvironmentBanner`、`PageHea
 一处**已知的重复**：只有 AppStore / Settings 用了 `PageHeader`，
 Skills / Mcp / ApiKeys / Routes 各自内联复制了一份 sticky header 的 className，
 是可以统一的技术债。
+
+## UI 原语（Base UI）
+
+`components/ui/` 是 vendored 的，不由 CLI 覆盖。从 registry 重新取源码
+（`https://ui.shadcn.com/r/styles/base-vega/<name>.json`）时，有四处必须手工处理，
+否则**静默失效**（能编译、能过构建，但样式或行为不对）：
+
+1. **导入与自定义类要本地化**：registry 里的 `cn` 指向其内部别名、`IconPlaceholder`
+   指向官网 create 应用、`cn-font-heading` / `cn-menu-target` / `cn-menu-translucent`
+   是官网内部类。需换成 `@/lib/utils` 与 `lucide-react`，并删掉未定义的自定义类。
+2. **`Separator` 的取向选择器**：Base UI 只发 `data-orientation="horizontal|vertical"`。
+   注册表源码用的 `data-horizontal:` / `data-vertical:` 不生成任何 CSS，会让分隔线
+   拿不到尺寸、渲染不可见 —— 必须写成 `data-[orientation=horizontal]:`。
+3. **`AlertDialogAction` 不再隐式关闭**：Radix 的 `Action` 会自动收起对话框，Base UI
+   版只是个普通 `Button`。凡是依赖旧行为的地方都要自己收状态，否则点确认后弹窗
+   一直挂着（`AppCard` 卸载确认即属此类）。
+4. **`Select` 的 `onValueChange` 会传 `string | null`**（清空时）。绑到 `string` 状态
+   的地方要加空值守卫。

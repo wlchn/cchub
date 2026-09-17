@@ -446,7 +446,7 @@ function HostCard({
             <AlertDialogFooter>
               <AlertDialogCancel>{t("routes.deleteDialog.cancel")}</AlertDialogCancel>
               <AlertDialogAction
-                className="bg-destructive text-white hover:bg-destructive/90"
+                variant="destructive"
                 onClick={() => {
                   if (confirming) void useRoutesStore.getState().remove(confirming.id);
                   setConfirming(null);
@@ -599,7 +599,12 @@ function RuleForm({
             })}
           </span>
         ) : (
-          <Select value={keyLabel} onValueChange={setKeyLabel}>
+          <Select
+            value={keyLabel}
+            onValueChange={(label) => {
+              if (label) setKeyLabel(label);
+            }}
+          >
             <SelectTrigger className="w-56">
               <SelectValue placeholder={t("routes.form.selectKey")} />
             </SelectTrigger>
