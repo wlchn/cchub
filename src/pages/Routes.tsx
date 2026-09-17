@@ -278,6 +278,7 @@ function HostCard({
                   <p className="text-muted-foreground mt-0.5 truncate font-mono text-[11px]">
                     {rule.baseUrl}
                     {rule.model ? ` · ${rule.model}` : ""}
+                    {rule.wireApi === "responses" ? " · responses" : ""}
                   </p>
                   {(rule.modelOpus || rule.modelSonnet || rule.modelHaiku) && (
                     <p className="text-muted-foreground/70 mt-0.5 text-[10px]">
@@ -504,6 +505,10 @@ function RuleForm({
   const [baseUrl, setBaseUrl] = useState(initial?.baseUrl ?? defaultEndpoint ?? "");
   const [keyLabel, setKeyLabel] = useState(initial?.keyRef.split("/")[1] ?? "");
   const [model, setModel] = useState(initial?.model ?? "");
+  // Codex 请求协议：null 与 "chat" 等价（Codex 默认），表单里统一展示成 "chat"
+  const [wireApi, setWireApi] = useState<"chat" | "responses">(
+    initial?.wireApi === "responses" ? "responses" : "chat",
+  );
   const [modelOpus, setModelOpus] = useState(initial?.modelOpus ?? "");
   const [modelSonnet, setModelSonnet] = useState(initial?.modelSonnet ?? "");
   const [modelHaiku, setModelHaiku] = useState(initial?.modelHaiku ?? "");
@@ -542,6 +547,7 @@ function RuleForm({
       baseUrl: baseUrl.trim(),
       keyRef: `@keychain:${selected.provider}/${selected.label}`,
       model: isCodex ? model.trim() : null,
+      wireApi: isCodex && wireApi === "responses" ? "responses" : null,
       modelOpus: !isCodex && !isGemini && modelOpus.trim() ? modelOpus.trim() : null,
       modelSonnet: !isCodex && !isGemini && modelSonnet.trim() ? modelSonnet.trim() : null,
       modelHaiku: !isCodex && !isGemini && modelHaiku.trim() ? modelHaiku.trim() : null,
@@ -620,21 +626,38 @@ function RuleForm({
       </div>
 
       {isCodex && (
-        <div className="grid grid-cols-[110px_1fr] items-center gap-3">
-          <Label htmlFor="rule-model">
-            {t("routes.form.model")}
-            <span className="text-destructive ml-0.5">*</span>
-          </Label>
-          <Input
-            id="rule-model"
-            value={model}
-            placeholder={
-              providerInfo?.defaultModels[0] ?? t("routes.form.modelPlaceholder")
-            }
-            onChange={(e) => setModel(e.target.value)}
-            className="h-8 font-mono text-xs"
-          />
-        </div>
+        <>
+          <div className="grid grid-cols-[110px_1fr] items-center gap-3">
+            <Label htmlFor="rule-wire-api">{t("routes.form.wireApi")}</Label>
+            <Select
+              value={wireApi}
+              onValueChange={(v) => v === "chat" || v === "responses" ? setWireApi(v) : undefined}
+            >
+              <SelectTrigger id="rule-wire-api" className="w-56">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="chat">{t("routes.form.wireApiChat")}</SelectItem>
+                <SelectItem value="responses">{t("routes.form.wireApiResponses")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-[110px_1fr] items-center gap-3">
+            <Label htmlFor="rule-model">
+              {t("routes.form.model")}
+              <span className="text-destructive ml-0.5">*</span>
+            </Label>
+            <Input
+              id="rule-model"
+              value={model}
+              placeholder={
+                providerInfo?.defaultModels[0] ?? t("routes.form.modelPlaceholder")
+              }
+              onChange={(e) => setModel(e.target.value)}
+              className="h-8 font-mono text-xs"
+            />
+          </div>
+        </>
       )}
 
       {!isCodex && !isGemini && (

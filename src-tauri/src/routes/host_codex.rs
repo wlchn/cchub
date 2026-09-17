@@ -85,6 +85,14 @@ pub fn edit_config(doc: &mut DocumentMut, rule: Option<&RouteRule>) {
             tbl["name"] = value(rule.name.as_str());
             tbl["base_url"] = value(rule.base_url.as_str());
             tbl["env_key"] = value("OPENAI_API_KEY");
+            // 请求协议：responses 显式写；chat 是 Codex 默认，不写键
+            //（保持 config.toml 最小化；回读侧 None 视作 chat）
+            match rule.wire_api.as_deref().map(str::trim) {
+                Some("responses") => tbl["wire_api"] = value("responses"),
+                _ => {
+                    tbl.remove("wire_api");
+                }
+            }
             doc["model_providers"][&key] = toml_edit::Item::Table(tbl);
         }
         None => {
@@ -243,6 +251,18 @@ pub fn read_state() -> HostState {
         None
     };
 
+    // 激活段里的 wire_api；缺省键 = Codex 默认 chat
+    let wire_api = if is_ours {
+        provider
+            .as_deref()
+            .and_then(|key| doc.get("model_providers").and_then(|mp| mp.get(key)))
+            .and_then(|item| item.get("wire_api"))
+            .and_then(|v| v.as_str())
+            .map(str::to_string)
+    } else {
+        None
+    };
+
     let model = doc
         .get("model")
         .and_then(|v| v.as_str())
@@ -250,6 +270,9 @@ pub fn read_state() -> HostState {
     let mut model_mappings = std::collections::BTreeMap::new();
     if let Some(m) = model {
         model_mappings.insert("model".to_string(), m);
+    }
+    if let Some(api) = wire_api {
+        model_mappings.insert("wireApi".to_string(), api);
     }
 
     // auth.json 的 key 指纹
@@ -311,6 +334,7 @@ mod tests {
             base_url: "https://api.example.com/v1".into(),
             key_ref: "@keychain:glm/main".into(),
             model: Some(model.into()),
+            wire_api: None,
             model_opus: None,
             model_sonnet: None,
             model_haiku: None,
@@ -406,6 +430,41 @@ name = "手写"
         edit_config(&mut doc, Some(&r));
         let out = doc.to_string();
         assert!(!out.contains("\nmodel = "), "{out}");
+    }
+
+    #[test]
+    fn wire_api_responses_is_written() {
+        let mut r = rule("openai", "gpt-5.2");
+        r.wire_api = Some("responses".into());
+        let mut doc = DocumentMut::new();
+        edit_config(&mut doc, Some(&r));
+        let out = doc.to_string();
+        assert!(out.contains(r#"wire_api = "responses""#), "{out}");
+    }
+
+    #[test]
+    fn wire_api_chat_omits_key() {
+        // chat 是 Codex 默认协议：不写键，config.toml 保持最小
+        let mut r = rule("openai", "gpt-5.2");
+        r.wire_api = Some("chat".into());
+        let mut doc = DocumentMut::new();
+        edit_config(&mut doc, Some(&r));
+        assert!(!doc.to_string().contains("wire_api"), "{}", doc.to_string());
+    }
+
+    #[test]
+    fn wire_api_removed_when_switched_back() {
+        // 先下发 responses，再切回 chat：旧键必须被清掉
+        let mut responses = rule("openai", "gpt-5.2");
+        responses.wire_api = Some("responses".into());
+        let mut doc = DocumentMut::new();
+        edit_config(&mut doc, Some(&responses));
+        assert!(doc.to_string().contains("wire_api"));
+
+        let mut chat = rule("openai", "gpt-5.2");
+        chat.wire_api = Some("chat".into());
+        edit_config(&mut doc, Some(&chat));
+        assert!(!doc.to_string().contains("wire_api"), "{}", doc.to_string());
     }
 
     #[test]

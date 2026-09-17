@@ -48,6 +48,10 @@ pub struct RouteRule {
     pub key_ref: String,
     /// 模型名。Codex 必填（写 config.toml 顶层 model）；Claude Code 可选。
     pub model: Option<String>,
+    /// Codex 专属：请求协议（写 model_providers.<id> 段的 wire_api）。
+    /// "chat" = Chat Completions（Codex 默认），"responses" = OpenAI Responses API。
+    #[serde(default)]
+    pub wire_api: Option<String>,
     /// Claude Code 专属：Opus 档位映射（写 ANTHROPIC_DEFAULT_OPUS_MODEL）。
     #[serde(default)]
     pub model_opus: Option<String>,
@@ -135,7 +139,14 @@ fn read_host_state(host: &str, active_rule: Option<&RouteRule>) -> HostStateView
         let url_match = state.base_url.as_deref() == Some(rule.base_url.as_str());
         let host = &state.model_mappings;
         let expects: Vec<(&str, Option<&str>)> = if rule.app == "codex" {
-            vec![("model", rule.model.as_deref())]
+            // wire_api 只有 responses 会写入宿主；chat 是 Codex 默认（不写键）
+            vec![
+                ("model", rule.model.as_deref()),
+                (
+                    "wireApi",
+                    rule.wire_api.as_deref().filter(|w| *w == "responses"),
+                ),
+            ]
         } else {
             vec![
                 ("opus", rule.model_opus.as_deref()),
@@ -202,6 +213,8 @@ fn load_rules(app: &tauri::AppHandle) -> RoutesFile {
         #[serde(default)]
         model: Option<String>,
         #[serde(default)]
+        wire_api: Option<String>,
+        #[serde(default)]
         model_opus: Option<String>,
         #[serde(default)]
         model_sonnet: Option<String>,
@@ -228,6 +241,7 @@ fn load_rules(app: &tauri::AppHandle) -> RoutesFile {
                 base_url: r.base_url,
                 key_ref: r.key_ref,
                 model: r.model,
+                wire_api: r.wire_api,
                 model_opus: r.model_opus,
                 model_sonnet: r.model_sonnet,
                 model_haiku: r.model_haiku,
@@ -322,6 +336,12 @@ fn validate(rule: &RouteRule) -> Result<(), String> {
     }
     if rule.app == "codex" && rule.model.as_deref().map(str::trim).unwrap_or("").is_empty() {
         return Err(error::err_plain("codexModelRequired"));
+    }
+    // wire_api 只认两种已知协议（None = Codex 默认 chat）
+    if let Some(api) = rule.wire_api.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
+        if api != "chat" && api != "responses" {
+            return Err(error::err("unknownWireApi", &[("api", api)]));
+        }
     }
     Ok(())
 }
@@ -590,6 +610,7 @@ mod tests {
             base_url: url.into(),
             key_ref: key.into(),
             model: None,
+            wire_api: None,
             model_opus: None,
             model_sonnet: None,
             model_haiku: None,
@@ -638,6 +659,39 @@ mod tests {
         ))
         .unwrap_err();
         assert_eq!(error::code_of(&err).as_deref(), Some("codexModelRequired"));
+    }
+
+    #[test]
+    fn codex_accepts_known_wire_api_values() {
+        let mut r = rule(
+            "codex",
+            "openai",
+            "https://api.openai.com/v1",
+            "@keychain:openai/main",
+        );
+        r.model = Some("gpt-5.2".into());
+        r.wire_api = Some("chat".into());
+        assert!(validate(&r).is_ok());
+        r.wire_api = Some("responses".into());
+        assert!(validate(&r).is_ok());
+        r.wire_api = Some("  responses  ".into());
+        assert!(validate(&r).is_ok());
+    }
+
+    #[test]
+    fn rejects_unknown_wire_api() {
+        let mut r = rule(
+            "codex",
+            "openai",
+            "https://api.openai.com/v1",
+            "@keychain:openai/main",
+        );
+        r.model = Some("gpt-5.2".into());
+        r.wire_api = Some("grpc".into());
+        assert_eq!(
+            error::code_of(&validate(&r).unwrap_err()).as_deref(),
+            Some("unknownWireApi")
+        );
     }
 
     #[test]

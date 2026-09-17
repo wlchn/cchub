@@ -175,6 +175,7 @@ mod tests {
             base_url: "https://example.com/v1".into(),
             key_ref: key_ref.into(),
             model: None,
+            wire_api: None,
             model_opus: None,
             model_sonnet: None,
             model_haiku: None,

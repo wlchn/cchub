@@ -248,6 +248,8 @@ export interface RouteRule {
   keyRef: string;
   /** 模型名。Codex 必填；Claude Code 可选。 */
   model: string | null;
+  /** Codex 专属：请求协议。"chat" = Chat Completions（默认），"responses" = OpenAI Responses API。null = 默认。 */
+  wireApi: "chat" | "responses" | null;
   /** Claude Code 专属：Opus 档位映射（ANTHROPIC_DEFAULT_OPUS_MODEL）。 */
   modelOpus: string | null;
   /** Claude Code 专属：Sonnet 档位映射。 */
